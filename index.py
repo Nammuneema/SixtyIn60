@@ -3,7 +3,7 @@ from urllib.request import urlopen, Request
 from urllib.parse import urlsplit
 from bs4 import BeautifulSoup
 
-import html
+import html.parser
 import hashlib
 import selector
 import dbHelper as db
@@ -72,7 +72,8 @@ def getNews():
     for item in items:
 
         # unescape html entitiles
-        title = html.unescape(item.find('title').text)
+        htmlParser = html.parser.HTMLParser()
+        title = htmlParser.unescape(item.find('title').text)
         # remove website name from title
         parts = title.split(' - ')
         parts = parts[:-1]
