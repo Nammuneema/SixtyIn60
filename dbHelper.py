@@ -33,6 +33,6 @@ def insert(data):
         if db.contains(news.id == data['id']) is False:
             db.insert(data)
         else:
-            #print('dbHelper : data already exist')
+            print('dbHelper : data already exist')
 
 

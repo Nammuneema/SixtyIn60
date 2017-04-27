@@ -19,7 +19,8 @@ def getSelectors():
         'www.thehindu.com':'._hoverrDone p',
         'www.deccanchronicle.com':'#storyBody p',
         'zeenews.india.com':'.field-item p',
-        'sports.ndtv.com':'[itemprop="articleBody"] p'
+        'sports.ndtv.com':'[itemprop="articleBody"] p',
+        'www.newindianexpress.com':'.page p'
     }
 
     return selectors
