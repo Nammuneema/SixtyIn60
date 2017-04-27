@@ -79,9 +79,9 @@ def getNews():
         title = htmlParser.unescape(item.find('title').text)
         # remove website name from title
         parts = title.split(' - ')
+        source = parts[len(parts)-1]
         parts = parts[:-1]
         title = "-".join(parts)
-        source = parts[len(parts)-1]
 
         url = item.find('link').text
         link = url.split('url=')[1]
