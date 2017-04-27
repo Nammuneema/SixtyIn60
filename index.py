@@ -10,6 +10,9 @@ import dbHelper as db
 
 selectors = selector.getSelectors()
 
+# Required to spoof some of the sites which otherwise don't return data
+userAgent = "Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405"
+
 def hashId(string):
     md5 = hashlib.md5(string.encode('utf-8')).hexdigest()
     return md5
@@ -34,7 +37,7 @@ def getArticle(url):
     }
 
     if domain in selectors.keys():
-        req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        req = Request(url, headers={'User-Agent': userAgent})
         res = urlopen(req)
         the_page = res.read().decode('utf-8')
         soup = BeautifulSoup(the_page, "html.parser")
@@ -57,7 +60,7 @@ def getArticle(url):
         text = text.replace('. "', '."')
         text = text.replace(". '", '.')
     else:
-        print('no selector for this site')
+        print('no selector for this site: '+url)
 
     return article
 
@@ -93,17 +96,13 @@ def getNews():
             article['category'] = category
             article['source'] = source
 
+            if article['body'] != "":
+                db.insert(article)
+
             print(article['title'])
             print(article['date'])
             print(article['link'])
 
-            if article['body'] != "":
-                db.insert(article)
-
-            # print(article['image'])
-            # print(article['body'])
-            # print(article['source'])
-            print('\n')
         except:
             print('error while fetching: '+link+'\n')
 
