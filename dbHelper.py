@@ -1,7 +1,8 @@
 from tinydb import TinyDB, Query
 import datetime
+import os
 
-path = 'db.json'
+path = os.path.dirname(__file__)+'/db.json'
 
 def getAll():
     with TinyDB(path) as db:
@@ -32,6 +33,6 @@ def insert(data):
         if db.contains(news.id == data['id']) is False:
             db.insert(data)
         else:
-            print('dbHelper : data already exist')
+            #print('dbHelper : data already exist')
 
 

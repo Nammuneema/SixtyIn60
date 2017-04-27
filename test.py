@@ -7,6 +7,7 @@ import html
 import hashlib
 import selector
 import dbHelper as db
+import os
 
 req = urlopen('https://sports.ndtv.com/indian-premier-league-2017/ipl-2017-gautam-gambhir-says-kolkata-knight-riders-confident-of-chasing-any-target-1686529')
 the_page = req.read().decode('utf-8')
@@ -20,5 +21,5 @@ items = soup.select(selector)
 for item in items:
     text = text + " ".join(item.text.split())
 
-print(text)
+print(os.path.dirname(__file__))
 

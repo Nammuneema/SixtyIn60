@@ -99,9 +99,10 @@ def getNews():
             if article['body'] != "":
                 db.insert(article)
 
-            print(article['title'])
-            print(article['date'])
-            print(article['link'])
+            # print(article['title'])
+            # print(article['date'])
+            # print(article['link'])
+            # print('\n')
 
         except:
             print('error while fetching: '+link+'\n')
