@@ -83,7 +83,8 @@ def getNews():
             if article['body'] != "" and db.exist(article) is False:
                 try:
                     article['body'] = summary.getSummary(article['body'])
-                    db.insert(article)
+                    if len(article['body']) < 60:
+                        db.insert(article)
                 except:
                     print(">> Error in summerising: ")
                     print(article['link'])

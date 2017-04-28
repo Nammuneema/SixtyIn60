@@ -17,14 +17,14 @@ def summerise(article, sentense):
 
 def getSummary(article):
     text = ""
-    sentense = 5
+    sentense = 10
     count = 70
 
     if len(article) == 0:
         print(">> Summary : Article length is 0")
         raise Exception()
 
-    while count > 50 and sentense > 0:
+    while count > 55 and sentense > 0:
         text = summerise(article,sentense)
         count = len(text.split(' '))
         sentense = sentense - 1
