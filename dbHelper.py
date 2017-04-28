@@ -32,7 +32,15 @@ def insert(data):
         news = Query()
         if db.contains(news.id == data['id']) is False:
             db.insert(data)
+            return True
         else:
             print('dbHelper : data already exist')
+            return False
+
+def exist(data):
+    with TinyDB(path) as db:
+        news = Query()
+        return db.contains(news.id == data['id'])
+
 
 

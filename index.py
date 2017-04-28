@@ -1,32 +1,17 @@
-from urllib import request
-from urllib.request import urlopen, Request
-from urllib.parse import urlsplit
 from bs4 import BeautifulSoup
-
 import html.parser
-import hashlib
-import selector
+import selector as sl
 import dbHelper as db
-
-selectors = selector.getSelectors()
-
-# Required to spoof some of the sites which otherwise don't return data
-userAgent = "Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405"
-
-def hashId(string):
-    md5 = hashlib.md5(string.encode('utf-8')).hexdigest()
-    return md5
-
-def getDomain(url):
-    base_url = "{0.netloc}".format(urlsplit(url))
-    return base_url
+import helper
+import summary
 
 def getArticle(url):
-    domain = getDomain(url)
-    text = ""
+
+    selectors = sl.getSelectors()
+    domain = helper.getDomain(url)
 
     article = {
-        'id':hashId(url),
+        'id':helper.hashId(url),
         'title':'',
         'body':'',
         'image':'',
@@ -37,28 +22,22 @@ def getArticle(url):
     }
 
     if domain in selectors.keys():
-        req = Request(url, headers={'User-Agent': userAgent})
-        res = urlopen(req)
-        the_page = res.read().decode('utf-8')
+        the_page = helper.getHTML(url)
         soup = BeautifulSoup(the_page, "html.parser")
 
         # get the selector for this perticular site.
         selector = selectors[domain]
         items = soup.select(selector)
 
-        # extract title and image from meta
-        #article['title'] = soup.find("meta", property="og:title")['content']
+        # extract image from meta
         article['image'] = soup.find("meta", property="og:image")['content']
+        text = ""
 
         for item in items:
-            text = text + " ".join(item.text.split())
+            text = text + item.text
 
-        text = text.replace('. ', '.')
-        # this add space after fullstop in paragraph
-        article['body'] = ". ".join(text.split('.'))
-        # change line ending with . " => ."
-        text = text.replace('. "', '."')
-        text = text.replace(". '", '.')
+        article['body'] = helper.cleanText(text)
+
     else:
         print('no selector for this site: '+url)
 
@@ -66,10 +45,10 @@ def getArticle(url):
 
 def getNews():
 
-    req = urlopen('https://news.google.co.in/news?cf=all&hl=en&pz=1&ned=in&output=rss')
-    the_page = req.read().decode('utf-8')
+    url = "https://news.google.com/news?cf=all&hl=en&pz=1&ned=in&output=rss"
+    the_page = helper.getHTML(url)
 
-    soup = BeautifulSoup(the_page,"html.parser")
+    soup = BeautifulSoup(the_page, "html.parser")
     items = soup.find_all('item')
 
     for item in items:
@@ -90,19 +69,24 @@ def getNews():
         category = item.find('category').text
 
         try:
+            # print(title)
+            # print(date)
+            # print(link)
+            # print('\n')
+
             article = getArticle(link)
             article['title'] = title
             article['date'] = date
             article['category'] = category
             article['source'] = source
 
-            if article['body'] != "":
-                db.insert(article)
-
-            # print(article['title'])
-            # print(article['date'])
-            # print(article['link'])
-            # print('\n')
+            if article['body'] != "" and db.exist(article) is False:
+                try:
+                    article['body'] = summary.getSummary(article['body'])
+                    db.insert(article)
+                except:
+                    print(">> Error in summerising: ")
+                    print(article['link'])
 
         except:
             print('error while fetching: '+link+'\n')

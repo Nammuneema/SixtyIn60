@@ -3,23 +3,79 @@ from urllib.request import urlopen, Request
 from urllib.parse import urlsplit
 from bs4 import BeautifulSoup
 
-import html
+import html.parser
 import hashlib
 import selector
 import dbHelper as db
-import os
+import summary
 
-req = urlopen('https://sports.ndtv.com/indian-premier-league-2017/ipl-2017-gautam-gambhir-says-kolkata-knight-riders-confident-of-chasing-any-target-1686529')
-the_page = req.read().decode('utf-8')
+selectors = selector.getSelectors()
 
-selector = '[itemprop="articleBody"] p'
-text = ""
+# Required to spoof some of the sites which otherwise don't return data
+userAgent = "Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405"
 
-soup = BeautifulSoup(the_page,"html.parser")
-items = soup.select(selector)
+def hashId(string):
+    md5 = hashlib.md5(string.encode('utf-8')).hexdigest()
+    return md5
 
-for item in items:
-    text = text + " ".join(item.text.split())
+def getDomain(url):
+    base_url = "{0.netloc}".format(urlsplit(url))
+    return base_url
 
-print(os.path.dirname(__file__))
+def getArticle(url):
+    domain = getDomain(url)
+    text = ""
 
+    article = {
+        'id':hashId(url),
+        'title':'',
+        'body':'',
+        'image':'',
+        'source':'',
+        'link':url,
+        'date':'',
+        'category':''
+    }
+
+    if domain in selectors.keys():
+        req = Request(url, headers={'User-Agent': userAgent})
+        res = urlopen(req)
+        the_page = res.read().decode('utf-8')
+        soup = BeautifulSoup(the_page, "html.parser")
+
+        # get the selector for this perticular site.
+        selector = selectors[domain]
+        items = soup.select('')
+        
+        print(selector)
+        print(soup.prettify())
+        print(items)
+
+        # extract title and image from meta
+        #article['title'] = soup.find("meta", property="og:title")['content']
+        article['image'] = soup.find("meta", property="og:image")['content']
+
+        for item in items:
+            text = text + " ".join(item.text.split())
+        
+        print("\n"+text+"\n")
+
+        text = text.replace('. ', '.')
+        # this add space after fullstop in paragraph
+        text = ". ".join(text.split('.'))
+        # change line ending with . " => ."
+        text = text.replace('. "', '." ')
+        text = text.replace(". '", ".' ")
+        #try:
+        article['body'] = summary.getSummary(text)
+        print(article['body'])
+        #except:
+            #print('>> Error while generating summary')
+    else:
+        print('no selector for this site: '+url)
+
+    return article
+
+getArticle('http://www.newindianexpress.com/nation/2017/apr/28/sukma-attack-another-maoists-body-recovered-death-toll-at-11-1598727.html')
+
+    
