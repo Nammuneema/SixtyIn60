@@ -22,7 +22,7 @@ def getLast(num):
 def _sortByDate(item):
     t1 = datetime.datetime.now()
     t2 = datetime.datetime.strptime(item['date'], "%a, %d %b %Y %X %Z")
-    dt = t1-t2
+    dt = t2-t1
     time = divmod(dt.days * 86400 + dt.seconds, 60)
     return time[0]
 
