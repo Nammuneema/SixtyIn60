@@ -45,7 +45,7 @@ def getArticle(url):
 
         # get the selector for this perticular site.
         selector = selectors[domain]
-        items = soup.select('')
+        items = soup.select(selector)
         
         print(selector)
         print(soup.prettify())
@@ -76,6 +76,6 @@ def getArticle(url):
 
     return article
 
-getArticle('http://www.newindianexpress.com/nation/2017/apr/28/sukma-attack-another-maoists-body-recovered-death-toll-at-11-1598727.html')
+getArticle('http://www.indiatvnews.com/news/india-sukma-attack-retaliation-for-2016-encounters-say-maoists-379192')
 
     

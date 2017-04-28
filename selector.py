@@ -20,7 +20,8 @@ def getSelectors():
         'www.deccanchronicle.com':'#storyBody p',
         'zeenews.india.com':'.field-item p',
         'sports.ndtv.com':'[itemprop="articleBody"] p',
-        'www.newindianexpress.com':'.page p'
+        'www.newindianexpress.com':'.page p',
+        'www.indiatvnews.com':'.madbodynew p'
     }
 
     return selectors
