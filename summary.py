@@ -24,7 +24,7 @@ def getSummary(article):
         print(">> Summary : Article length is 0")
         raise Exception()
 
-    while count > 65 and sentense > 0:
+    while count > 50 and sentense > 0:
         text = summerise(article,sentense)
         count = len(text.split(' '))
         sentense = sentense - 1
