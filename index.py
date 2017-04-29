@@ -23,6 +23,7 @@ def getArticle(url):
 
     if domain in selectors.keys():
         the_page = helper.getHTML(url)
+        the_page = helper.filterUnwantedTag(the_page)
         soup = BeautifulSoup(the_page, "html.parser")
 
         # get the selector for this perticular site.

@@ -1,7 +1,9 @@
 from urllib import request
 from urllib.request import urlopen, Request
 from urllib.parse import urlsplit
+from bs4 import BeautifulSoup as bs
 import hashlib
+import re
 
 def hashId(string):
     md5 = hashlib.md5(string.encode('utf-8')).hexdigest()
@@ -29,3 +31,9 @@ def getHTML(url):
     res = urlopen(req)
     the_page = res.read().decode('utf-8')
     return the_page
+
+def filterUnwantedTag(unFiltered):
+    regex = re.compile(r'<(script|blackquote).*?</\1>(?s)') #'<(script|blackquote|xyz).*?</\1>(?s)'
+    filtered = re.sub(regex, "", unFiltered)
+
+    return filtered
